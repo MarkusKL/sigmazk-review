@@ -1,0 +1,37 @@
+-R theories SigmaZK
+
+theories/Base.v
+theories/Groups.v
+theories/Sigma.v
+
+# Protocols
+theories/Protocols/DepHom.v
+theories/Protocols/Parallel.v
+theories/Protocols/Shrink.v
+theories/Protocols/AND.v
+theories/Protocols/OR.v
+theories/Protocols/WitnessMap.v
+theories/Protocols/Pedersen.v
+
+# Examples
+theories/Examples/Common.v
+theories/Examples/Schnorr.v
+theories/Examples/Okamoto.v
+theories/Examples/ChaumPedersen.v
+theories/Examples/Adjust.v
+theories/Examples/GuillouQuisquater.v
+theories/Examples/HardExample.v
+theories/Examples/ExtraHardExample.v
+theories/Examples/Square.v
+theories/Examples/EQ.v
+theories/Examples/Inverse.v
+theories/Examples/PolyOneGen.v
+theories/Examples/BBSPlusPoK.v
+theories/Examples/Circuit.v
+theories/Examples/BitCommitment.v
+theories/Examples/ECAdd.v
+theories/Examples/CDM.v
+
+# Proof in the computational model (dependent on SSProve)
+theories/ComputationalModel/Scheme.v
+theories/ComputationalModel/Properties.v
