@@ -24,7 +24,7 @@ Lemma expg_sub_eq_r {H : finGroupType} {x : 'Z_#|H|} {h1 h2 h3 : H}
 Proof. intros H'. by rewrite -H' -mulgA -expgrD GRing.subrr gsimp. Qed.
 
 Program Definition sigmaR : sigma 'Z_#|G| R Err :=
-  WitnessMap (W' := 'Z_#|G| ^ 6)
+  WitnessMap (Wit' := 'Z_#|G| ^ 6)
     (λ '(x, y), (x, y, y ^ 2, x ^ 2, - (y ^ 2 * x) + y, x - x ^ 2 * y)%R)
     (λ '(x, y, s, t, u, v),
       if (s * x + u == y)%R then

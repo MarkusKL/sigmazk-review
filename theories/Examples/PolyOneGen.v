@@ -50,7 +50,7 @@ Program Fixpoint poly_sigma_lemma (H : finType) k n m
   | Hom_cons a T Ha HT =>
       (Pedersen_expg h (λ w, g ^ mul_seq T w.2) hgen prime_G
         (WitnessMap
-          (W' := 'Z_#|G| ^ n.+2 * 'Z_#|G| ^ k)
+          (Wit' := 'Z_#|G| ^ n.+2 * 'Z_#|G| ^ k)
           (λ '(M, r', x, r), (M, - (r * a x) + r', r, x)%R)
           (λ '(M, y, r, x), inl (M, (r * a x) + y, x, r))
           _ _
@@ -121,7 +121,7 @@ Program Definition poly_sigma_pure {H : finType} k
     sigma 'Z_#|G| (λ h' (w : 'Z_#|G| ^ k), P1 h' = g ^ (mul_seq T w)) Err :=
   Pedersen_expg h (λ w, g ^ mul_seq T w) hgen prime_G (
     WitnessMap
-      (W' := 'Z_#|G| ^ 3 * 'Z_#|G| ^ k)
+      (Wit' := 'Z_#|G| ^ 3 * 'Z_#|G| ^ k)
       (R' := λ '(A, B) '(_, t, r, r', w),
         (0 : 'I_1, P1 A, B^-1 * P1 A) = (0, g ^ t, h ^ r)
           ∧ B = g ^ mul_seq T w * h ^ r')

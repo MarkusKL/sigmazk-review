@@ -10,10 +10,10 @@ Let Com x r := g ^ x * h ^ r.
 
 Program Definition BitCommitment :
   sigma 'Z_#|G| (λ C '((b, r) : bool * _), C = Com b%:R r) NoErr :=
-  WitnessMapNoErr
+  WitnessMap
     (R' := λ C w, case (λ r, g ^ (- 1) * C = h ^ r) (λ r, C = h ^ r) w)
     (λ '(b, r), if b then inl r else inr r)
-    (λ 'w, case (λ r, (true, r)) (λ r, (false, r)) w) _ _
+    (λ 'w, inl (case (λ r, (true, r)) (λ r, (false, r)) w)) _ _
     (OR
       (DepHomPrime _ (λ C, g ^ (-1) * C) (λ _ r, h ^ r) primeG)
       (DepHomPrime _ (λ C, C) (λ _ r, h ^ r) primeG)
