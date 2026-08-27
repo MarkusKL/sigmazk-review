@@ -57,7 +57,7 @@ Proof.
   by rewrite 2!mulg_prod H1 H2 /=.
 Qed.
 
-Definition ECAdd_CDM (G : finGroupType) primeG (g h : G) hgen
+Program Definition ECAdd_CDM (G : finGroupType) primeG (g h : G) hgen
   : CDM (ECAdd_Circuit G primeG g h hgen) :=
   CDM_Pedersen _ _ _ (
   CDM_Pedersen _ _ _ (
@@ -69,6 +69,8 @@ Definition ECAdd_CDM (G : finGroupType) primeG (g h : G) hgen
   CDM_Iff _ _ (
   CDM_DepHomPrime _ _ _ _ _ _
   )))))))).
+
+Optimize Heap.
 
 Definition ECAdd_ZK (G : finGroupType) primeG (g h : G) hgen
   := ZK _ (ECAdd_CDM G primeG g h hgen).
