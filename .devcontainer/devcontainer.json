@@ -1,13 +1,12 @@
 {
-  "name": "sigmazk-devcontainer",
+  "name": "nominal-ssprove-devcontainer",
   "image": "ghcr.io/xtruder/nix-devcontainer:v1",
-  "onCreateCommand": "mkdir -p ~/.config/nix && cp nix.conf ~/.config/nix/",
-  "workspaceFolder": "/workspaces/sigmazk-review",
+  "onCreateCommand": "mkdir -p ~/.config/nix && cp .devcontainer/nix.conf ~/.config/nix/ && nix-shell .devcontainer/codespace.nix --run 'make'",
 
   "customizations": {
     "vscode": {
       "settings": {
-        "nixEnvSelector.nixFile": "${workspaceFolder}/codespace.nix"
+        "nixEnvSelector.nixFile": "${workspaceFolder}/.devcontainer/codespace.nix"
       },
       "extensions": [
         "arrterian.nix-env-selector",
