@@ -60,9 +60,10 @@ Qed.
 Definition ECAdd_CDM (G : finGroupType) primeG (g h : G) hgen
   : CDM (ECAdd_Circuit G primeG g h hgen).
 Proof.
-  do 6 apply: CDM_Pedersen.
-  apply: CDM_WitnessMap.
-  apply: CDM_Iff.
+  unfold ECAdd_Circuit.
+  do 6 apply @CDM_Pedersen.
+  apply: CDM_WitnessMap;
+  apply: CDM_Iff;
   apply: CDM_DepHomPrime.
 Defined.
 
