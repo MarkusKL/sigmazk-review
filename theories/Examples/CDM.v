@@ -58,14 +58,17 @@ Proof.
 Qed.
 
 Definition ECAdd_CDM (G : finGroupType) primeG (g h : G) hgen
-  : CDM (ECAdd_Circuit G primeG g h hgen).
-Proof.
-  unfold ECAdd_Circuit.
-  do 6 apply @CDM_Pedersen.
-  apply: CDM_WitnessMap;
-  apply: CDM_Iff;
-  apply: CDM_DepHomPrime.
-Defined.
+  : CDM (ECAdd_Circuit G primeG g h hgen) :=
+  CDM_Pedersen _ _ _ (
+  CDM_Pedersen _ _ _ (
+  CDM_Pedersen _ _ _ (
+  CDM_Pedersen _ _ _ (
+  CDM_Pedersen _ _ _ (
+  CDM_Pedersen _ _ _ (
+  CDM_WitnessMap _ _ _ _ _ (
+  CDM_Iff _ _ (
+  CDM_DepHomPrime _ _ _ _ _ _
+  )))))))).
 
 Definition ECAdd_ZK (G : finGroupType) primeG (g h : G) hgen
   := ZK _ (ECAdd_CDM G primeG g h hgen).
