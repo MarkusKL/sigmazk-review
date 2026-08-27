@@ -1,0 +1,18 @@
+{
+  "name": "sigmazk-devcontainer",
+  "image": "ghcr.io/xtruder/nix-devcontainer:v1",
+  "onCreateCommand": "mkdir -p ~/.config/nix && cp nix.conf ~/.config/nix/",
+  "workspaceFolder": "/workspaces/sigmazk-review",
+
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "nixEnvSelector.nixFile": "${workspaceFolder}/codespace.nix"
+      },
+      "extensions": [
+        "arrterian.nix-env-selector",
+        "ejgallego.coq-lsp"
+      ]
+    }
+  }
+}
