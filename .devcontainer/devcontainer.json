@@ -1,7 +1,11 @@
 {
-  "name": "nominal-ssprove-devcontainer",
+  "name": "sigmazk-devcontainer",
   "image": "ghcr.io/xtruder/nix-devcontainer:v1",
   "onCreateCommand": "mkdir -p ~/.config/nix && cp .devcontainer/nix.conf ~/.config/nix/ && nix-shell .devcontainer/codespace.nix --run 'make'",
+  "hostRequirements": {
+    "memory": "16gb"
+  },
+
 
   "customizations": {
     "vscode": {
