@@ -3,7 +3,7 @@ From SigmaZK Require Import Base Groups Sigma
   Schnorr Okamoto ChaumPedersen HardExample
   Square ExtraHardExample Inverse PolyOneGen
   BBSPlusPoK Circuit Adjust GuillouQuisquater
-  BitCommitment EQ ECAdd CDM Scheme Properties.
+  BitCommitment EQ ECAdd CDM.
 
 (* This file prints our results to the the output,
    so that they are visible while compiling and checking. *)
@@ -67,6 +67,7 @@ Print Assumptions rules_and_examples.
 Definition Fifthly_our_results_in_NSSProve := tt.
 Check Fifthly_our_results_in_NSSProve.
 
+From SigmaZK Require Import Scheme Properties.
 From SSProve.Crypt Require Import NominalPrelude.
 Import PackageNotation.
 #[local] Open Scope package_scope.
