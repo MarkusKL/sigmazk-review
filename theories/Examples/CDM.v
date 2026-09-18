@@ -81,11 +81,11 @@ Section CountingGroupElements.
     (g h : G) (hgen : generator [set: G] h).
 
   Goal (ECAdd_CDM G primeG g h hgen).(Mes).
-  Proof. intros. cbn. Abort. (* 15 group elements *)
+  Proof. intros. lazy. Abort. (* 15 group elements *)
 
   Goal (ECAdd_Circuit G primeG g h hgen).(Mes).
-  Proof. intros. cbn. Abort. (* 21 group elements*)
+  Proof. intros. lazy. Abort. (* 21 group elements*)
 
   Goal (ECAdd_ZK G primeG g h hgen).(Mes).
-  Proof. intros. cbn. Abort. (* 21 + 15 = 36 group elements *)
+  Proof. intros. lazy. Abort. (* 21 + 15 = 36 group elements *)
 End CountingGroupElements.
