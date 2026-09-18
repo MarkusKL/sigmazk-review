@@ -1,0 +1,291 @@
+coq_makefile -f _CoqProject -o CoqMakefile
+make --no-print-directory -f CoqMakefile 
+ROCQ DEP VFILES
+ROCQ compile theories/Base.v
+ROCQ compile theories/Groups.v
+ROCQ compile theories/Sigma.v
+ROCQ compile theories/Protocols/DepHom.v
+ROCQ compile theories/Protocols/Parallel.v
+ROCQ compile theories/Protocols/Shrink.v
+ROCQ compile theories/Protocols/AND.v
+ROCQ compile theories/Protocols/OR.v
+ROCQ compile theories/Protocols/WitnessMap.v
+ROCQ compile theories/Protocols/Pedersen.v
+ROCQ compile theories/Examples/Common.v
+ROCQ compile theories/Examples/Schnorr.v
+ROCQ compile theories/Examples/Okamoto.v
+ROCQ compile theories/Examples/ChaumPedersen.v
+ROCQ compile theories/Examples/Adjust.v
+ROCQ compile theories/Examples/GuillouQuisquater.v
+ROCQ compile theories/Examples/HardExample.v
+ROCQ compile theories/Examples/ExtraHardExample.v
+ROCQ compile theories/Examples/Square.v
+ROCQ compile theories/Examples/EQ.v
+ROCQ compile theories/Examples/Inverse.v
+ROCQ compile theories/Examples/PolyOneGen.v
+ROCQ compile theories/Examples/BBSPlusPoK.v
+ROCQ compile theories/Examples/Circuit.v
+ROCQ compile theories/Examples/BitCommitment.v
+ROCQ compile theories/Examples/ECAdd.v
+ROCQ compile theories/Examples/CDM.v
+ROCQ compile theories/ComputationalModel/Scheme.v
+ROCQ compile theories/ComputationalModel/Properties.v
+ROCQ compile theories/Results.v
+Firstly_the_type_of_sigma
+     : unit
+@sigma
+     : ∀ Stmt Wit Forb : finType,
+         finType → (Stmt → Wit → Prop) → (Forb → Prop) → Type
+Secondly_our_7_composition_rules
+     : unit
+@OR
+     : ∀ (Stat Wit Wit' Forb : finType) (n : nat) 
+         (Rl : Stat → Wit → Prop) (Rr : Stat → Wit' → Prop) 
+         (Err : Forb → Prop),
+         sigma 'Z_n Rl Err
+         → sigma 'Z_n Rr Err
+           → sigma 'Z_n
+               (λ (h : Stat) (w : Datatypes_sum__canonical__fintype_Finite
+                                    Wit Wit'),
+                  case (Rl h) (Rr h) w)
+               Err
+@AND
+     : ∀ (Stat Wit Wit' Forb Chal : finType) (Rl : Stat → Wit → Prop) 
+         (Rr : Stat → Wit' → Prop) (Err : Forb → Prop),
+         sigma Chal Rl Err
+         → sigma Chal Rr Err
+           → sigma Chal (λ (h : Stat) '(w1, w2), Rl h w1 ∧ Rr h w2) Err
+@DepHom
+     : ∀ (Forb : finType) (Err : Forb → Prop) (I : finType) 
+         (G H : finGroupType) (l : nat) (u : I → G) 
+         (F : I → G → H) (P : I → H),
+         (∀ i : I, Hom (F i))
+         → (∀ e e' : 'Z_l, e != e' → gcdz l (e - e') = 1%Z)
+           → (∀ i : I, F i (u i) = P i ^+ l)
+             → sigma 'Z_l (λ (h : I) (w : G), P h = F h w) Err
+@WitnessMap
+     : ∀ (Stat Wit Wit' Forb Chal : finType) (R : Stat → Wit → Prop) 
+         (R' : Stat → Wit' → Prop) (Err : Forb → Prop) 
+         (toW : Wit → Wit') (fromW : Wit' → Wit + Forb),
+         (∀ (h : Stat) (w : Wit), R h w → R' h (toW w))
+         → (∀ (h : Stat) (w : Wit'), R' h w → case (R h) Err (fromW w))
+           → sigma Chal R' Err → sigma Chal R Err
+@Pedersen
+     : ∀ (Stat Wit Forb Chal G G' : finType) (R : Stat → Wit → Prop) 
+         (Err : Forb → Prop) (f : Wit → G → G'),
+         (∀ w : Wit, inverse (f w))
+         → sigma Chal (λ '(h, B) '(w, r), R h w ∧ B = f w r) Err
+           → sigma Chal R Err
+@Shrink
+     : ∀ (Stat Wit Forb : finType) (n m : nat) (R : Stat → Wit → Prop) 
+         (Err : Forb → Prop),
+         (m <= n)%N → sigma 'I_n R Err → sigma 'I_m R Err
+@Parallel
+     : ∀ (Stat Wit Forb : finType) (n m : nat) (R' : Stat → Wit → Prop) 
+         (Err : Forb → Prop),
+         sigma 'I_n R' Err → sigma 'I_m R' Err → sigma 'I_(n * m) R' Err
+Thirdly_our_17_examples
+     : unit
+Schnorr
+     : ∀ G : finGroupType,
+         prime #|G|
+         → ∀ g : G, sigma 'Z_#|G| (λ (h : G) (w : 'Z_#|G|), h = g ^ w) NoErr
+Okamoto
+     : ∀ G : finGroupType,
+         prime #|G|
+         → ∀ g1 g2 : G,
+             sigma 'Z_#|G|
+               (λ (h : G) (w : fZ G × fZ G), h = g1 ^ w.1 * g2 ^ w.2) NoErr
+ChaumPedersen
+     : ∀ G : finGroupType,
+         prime #|G|
+         → ∀ g1 g2 : G,
+             sigma 'Z_#|G| (λ '(A, B) (x : fZ G), A = g1 ^ x ∧ B = g2 ^ x)
+               NoErr
+@R1_Protocol
+     : ∀ G : finGroupType,
+         prime #|G|
+         → ∀ g h : G,
+             sigma 'Z_#|G|
+               (λ '(A, B) '(x, y, z),
+                  A = g ^ x ^ 2 * h ^ y ∧ B = g ^ x * h ^ z)
+               NoErr
+@R2_Protocol
+     : ∀ G : finGroupType,
+         prime #|G|
+         → ∀ g h : G,
+             generator [set: G] h
+             → sigma 'Z_#|G| (λ (A : G) '(x, y), A = g ^ x ^ 2 * h ^ y) NoErr
+square_prot
+     : ∀ G : finGroupType,
+         prime #|G|
+         → ∀ g h : G,
+             generator [set: G] h
+             → sigma 'Z_#|G| (λ (A : G) '(_, x), A = g ^ x ^ 2)
+                 (λ e : 'Z_#|G|, g ^ e = h)
+@sigmaR
+     : ∀ (G : finGroupType) (g h : G),
+         prime #|G|
+         → sigma 'Z_#|G|
+             (λ '(A, B) '(x, y),
+                A = g ^ x ^ 2 * h ^ y ∧ B = g ^ x * h ^ y ^ 2)
+             (λ e : 'Z_#|G|, g ^ e = h)
+inverse_prot
+     : ∀ G : finGroupType,
+         prime #|G|
+         → ∀ g : G,
+             g ≠ 1
+             → sigma 'Z_#|G|
+                 (λ (A : G) '(x, e), A = g ^ (x + e)^-1 ∧ x + e ≠ 0) NoErr
+poly_sigma_pure
+     : ∀ G : finGroupType,
+         prime #|G|
+         → ∀ g h : G,
+             generator [set: G] h
+             → ∀ (H : finType) (k : nat) (P1 : H → G) 
+                 (T : seq
+                        ('Z_#|G| ^ k
+                         → fintype_ordinal__canonical__fingroup_FinGroup
+                             (Zp_trunc #|G|).+1)),
+                 Homs T
+                 → sigma 'Z_#|G|
+                     (λ (h' : H) (w : 'Z_#|G| ^ k), P1 h' = g ^ mul_seq T w)
+                     (λ e : 'Z_#|G|, g ^ e = h)
+BBSPlusPoK
+     : ∀ G1 G2 GT : finGroupType,
+         prime #|G1|
+         → #|G2| = #|G1|
+           → #|GT| = #|G1|
+             → ∀ (g1 h0 h1 : G1) (g2 : G2),
+                 generator [set: G1] h1
+                 → ∀ e : G1 → G2 → GT,
+                     (∀ z : G2, Hom (e^~ z))
+                     → (∀ z : G1, Hom (e z))
+                       → sigma 'Z_#|G1|
+                           (λ (pk : G2) '(m, A, e', s),
+                              e A (pk * g2 ^ e'%:R) =
+                              e (g1 * h0 ^ s * h1 ^ m) g2)
+                           (λ e0 : 'Z_#|G1|, h1 ^ e0 = h0)
+BBS2
+     : ∀ G1 : finGroupType,
+         prime #|G1|
+         → ∀ g1 h0 h1 : G1,
+             sigma 'Z_#|G1|
+               (λ '(A', Ab, d) '(m, e', r2, r3, s'),
+                  Ab * d^-1 = A' ^ (- e') * h0 ^ r2
+                  ∧ g1 = d ^ r3 * h0 ^ (- s') * h1 ^ m)
+               (λ e : 'Z_#|G1|, h1 ^ e = h0)
+@Adjust
+     : ∀ (H W Forb : finType) (C C' : nat) (R : H → W → Prop) 
+         (Err : Forb → Prop),
+         sigma 'I_C R Err → (1 < C)%N → sigma 'I_C' R Err
+GuillouQuisquater
+     : ∀ lam m e : nat,
+         prime e
+         → sigma 'Z_(2 ^ lam)
+             (λ (z : FinRing.FinRing_unit_of__canonical__fingroup_BaseFinGroup
+                       'Z_m) (x : {unit 'Z_m}),
+                z = x ^+ e)
+             NoErr
+BitCommitment
+     : ∀ G : finGroupType,
+         prime #|G|
+         → ∀ g h : G,
+             sigma 'Z_#|G| (λ (C : G) '(b, r), C = g ^ b%:R * h ^ r) NoErr
+@EQ
+     : ∀ (H W Forb : finType) (C : nat) (R : H → W → Prop) 
+         (Err : Forb → Prop) (P : sigma 'Z_C R Err),
+         (∀ (h1 h2 : H) (w : W) (r : Rand P) (e : 'Z_C),
+            response P h1 w r e = response P h2 w r e)
+         → (∀ (h1 h2 : H) (e : 'Z_C) (r : RandSim P),
+              (simulate P h1 e r).2 = (simulate P h2 e r).2)
+           → (∀ (h1 h2 : H) (a1 a2 : Mes P) (e e' : 'Z_C) (z z' : Res P),
+                extractor P h1 a1 e e' z z' = extractor P h2 a2 e e' z z')
+             → sigma 'Z_C (λ '(h1, h2) (w : W), R h1 w ∧ R h2 w) Err
+ECAdd_Circuit
+     : ∀ G : finGroupType,
+         prime #|G|
+         → ∀ g h : G,
+             generator [set: G] h
+             → sigma 'Z_#|G|
+                 (λ '(C1, C2, C3, C4, C5, C6) '(a, b, t, r1, r2, r3, r4, r5,
+                                                r6),
+                    a.1 ≠ b.1
+                    ∧ ec_add G a b = t
+                      ∧ C1 = Com G g h a.1 r1
+                        ∧ C2 = Com G g h a.2 r2
+                          ∧ C3 = Com G g h b.1 r3
+                            ∧ C4 = Com G g h b.2 r4
+                              ∧ C5 = Com G g h t.1 r5 ∧ C6 = Com G g h t.2 r6)
+                 (λ e : 'Z_#|G|, Com G g h 1%R e = 1)
+ECAdd_ZK
+     : ∀ (G : finGroupType) (primeG : prime #|G|) 
+         (g h : G) (hgen : generator [set: G] h),
+         sigma 'Z_#|G|
+           (λ '(h0, a) (w : Datatypes_sum__canonical__fintype_Finite
+                              (fZ G × fZ G × (fZ G × fZ G) × (fZ G × fZ G)
+                               × fZ G × fZ G × fZ G × 
+                               fZ G × fZ G × fZ G)
+                              ('Z_#|G|
+                               × Res (ECAdd_Circuit G primeG g h hgen))),
+              case
+                (let
+                 '(C1, C2, C3, C4, C5, C6) := h0 in
+                  λ '(a0, b, t, r1, r2, r3, r4, r5, r6),
+                    a0.1 ≠ b.1
+                    ∧ ec_add G a0 b = t
+                      ∧ C1 = Com G g h a0.1 r1
+                        ∧ C2 = Com G g h a0.2 r2
+                          ∧ C3 = Com G g h b.1 r3
+                            ∧ C4 = Com G g h b.2 r4
+                              ∧ C5 = Com G g h t.1 r5 ∧ C6 = Com G g h t.2 r6)
+                (λ '(e, z), verify (ECAdd_Circuit G primeG g h hgen) h0 a e z)
+                w)
+           (λ e : 'Z_#|G|, Com G g h 1%R e = 1)
+Fourthly_our_rules_and_examples_use_no_axioms
+     : unit
+Closed under the global context
+Fifthly_our_results_in_NSSProve
+     : unit
+@sigma_Complete
+     : ∀ (H W F C : finType) (R0 : H → W → Prop) (E : F → Prop) 
+         (P : Sigma.sigma C R0 E) (A : nom_package),
+         Lt 0 #|Rand P|
+         → ValidPackage (loc A) (IComplete (sigma_as_scheme P)) A_export A
+           → Adv (Complete (sigma_as_scheme P) true)
+               (Complete (sigma_as_scheme P) false) A =
+             0
+@sigma_SHVZK
+     : ∀ (H W F C : finType) (R0 : H → W → Prop) (E : F → Prop) 
+         (P : Sigma.sigma C R0 E) (A : nom_package),
+         ValidPackage (loc A) (ITranscript (sigma_as_scheme P)) A_export A
+         → Adv (SHVZK (sigma_as_scheme P) true)
+             (SHVZK (sigma_as_scheme P) false) A =
+           0
+@sigma_Special_Soundness
+     : ∀ (H W F C : finType) (R0 : H → W → Prop) (E : F → Prop) 
+         (P : Sigma.sigma C R0 E) (A : nom_package),
+         ValidPackage (loc A) (ISoundness (sigma_as_scheme P)) A_export A
+         → Adv (Special_Soundness (sigma_as_scheme P) true)
+             (Special_Soundness (sigma_as_scheme P) false) A =
+           Adv (Rel E true) (Rel E false) (A ∘ SSRed P)
+Axioms:
+boolp.propositional_extensionality : ∀ P Q : Prop, P ↔ Q → P = Q
+boolp.functional_extensionality_dep :
+  ∀ (A : Type) (B : A → Type) (f g : ∀ x : A, B x),
+    (∀ x : A, f x = g x) → f = g
+functional_extensionality_dep :
+  ∀ (A : Type) (B : A → Type) (f g : ∀ x : A, B x),
+    (∀ x : A, f x = g x) → f = g
+boolp.constructive_indefinite_description :
+  ∀ (A : Type) (P : A → Prop), (∃ x : A, P x) → {x : A | P x}
+SPropBase.ax_proof_irrel : ClassicalFacts.proof_irrelevance
+realsum.__admitted__interchange_psum :
+  ∀ (R : reals.Real.type) (T U : choiceType) (S : T → U → reals.Real.sort R),
+    (∀ x : T, realsum.summable (T:=U) (R:=R) (S x))
+    → realsum.summable (T:=T) (R:=R) (λ x : T, realsum.psum [eta S x])
+      → realsum.psum (λ x : T, realsum.psum [eta S x]) =
+        realsum.psum (λ y : U, realsum.psum (S^~ y))
+R : reals.Real.type
+Axioms_above_are_the_same_as_those_of_SSProve
+     : unit
