@@ -5,6 +5,7 @@ From mathcomp Require Import reals distr realsum.
 From SSProve.Crypt Require Import NominalPrelude.
 Import PackageNotation. #[local] Open Scope package_scope.
 
+Notation dist A := (code emptym [interface] A).
 
 Section Scheme.
 
@@ -19,28 +20,19 @@ Record sigma :=
   ; R : Stmt → Wit → bool
 
   ; commit :
-    ∀ (h : Stmt) (w : Wit),
-      code emptym [interface] (Mes × State)
+    Stmt → Wit → dist (Mes × State)
 
   ; response :
-    ∀ (h : Stmt) (w : Wit)
-      (a : Mes) (s : State) (e : Chal),
-      code emptym [interface] Res
+    Stmt → Wit → Mes → State → Chal → dist Res
 
   ; verify :
-    ∀ (h : Stmt) (a : Mes) (e : Chal)
-      (z : Res),
-      bool
+    Stmt → Mes → Chal → Res → bool
 
-  ; simulate :
-    ∀ (h : Stmt) (e : Chal),
-      code emptym [interface] (Mes × Res)
+  ; simulate : Stmt → Chal → dist (Mes × Res)
 
   ; extractor :
-    ∀ (h : Stmt) (a : Mes)
-      (e : Chal) (e' : Chal)
-      (z : Res) (z' : Res),
-      'option Wit
+    Stmt → Mes → Chal → Chal → Res → Res →
+      option Wit
   }.
 
 
@@ -158,22 +150,22 @@ Qed.
 
 Definition SOUNDNESS : nat := 4.
 
-Definition Opening p := p.(Chal) × p.(Res).
-Definition Soundness p :=
-  p.(Stmt) × p.(Mes) × Opening p × Opening p.
-
 Definition ISoundness p :=
-  [interface [ SOUNDNESS ] : { Soundness p ~> 'bool } ].
+  [interface [ SOUNDNESS ] : {
+    p.(Stmt) × p.(Mes) ×
+    (p.(Chal) × p.(Res)) ×
+    (p.(Chal) × p.(Res)) ~> 'bool } ].
 
-Definition Special_Soundness p b : game (ISoundness p) :=
+Definition Special_Soundness p b
+  : game (ISoundness p) :=
   [package emptym ;
     [ SOUNDNESS ] '(h, a, (e, z), (e', z')) {
       let v1 := p.(verify) h a e z in
       let v2 := p.(verify) h a e' z' in
       let v3 := e != e' in
-      ret [==> v1, v2, v3, b =>
-        if p.(extractor) h a e e' z z' is Some w then p.(R) h w else false
-      ]
+      ret (v1 && v2 && v3 && b ==>
+        if p.(extractor) h a e e' z z' is Some w
+          then p.(R) h w else false)
     }
   ].
 

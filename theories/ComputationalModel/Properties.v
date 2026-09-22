@@ -10,11 +10,11 @@ Import PackageNotation.
 
 Section Properties.
 
-Context {H W F C : finType} {R : H → W → Prop}.
-Context {E : F → Prop} (P : sigma C R E).
 Import Sigma.
 
-Program Definition sigma_as_scheme : Scheme.sigma :=
+Program Definition encode {H W F C : finType}
+  {R : H → W → Prop} {E : F → Prop}
+  (P : sigma C R E) :=
   {| Scheme.Stmt := 'fin #|H|
    ; Scheme.Wit := 'fin #|W|
    ; Scheme.Mes := 'fin #|P.(Mes)|
@@ -22,30 +22,39 @@ Program Definition sigma_as_scheme : Scheme.sigma :=
    ; Scheme.Chal := 'fin #|C|
    ; Scheme.Res := 'fin #|P.(Res)|
 
-   ; Scheme.R := λ h w, boolp.asbool (R (otf h) (otf w))
+   ; Scheme.R :=
+     λ h w, boolp.asbool (R (otf h) (otf w))
    ; Scheme.commit := λ h w, {code
        r ← sample uniform #|P.(Rand)| ;;
-       let a := P.(commit) (otf h) (otf w) (otf r) in
+       let a :=
+         P.(commit) (otf h) (otf w) (otf r) in
        ret (fto a, r)
      }
    ; Scheme.response := λ h w _ s e, {code
-       ret (fto (P.(response) (otf h) (otf w) (otf s) (otf e)))
+       ret (fto (P.(response)
+         (otf h) (otf w) (otf s) (otf e)))
      }
-   ; Scheme.verify := λ h a e z,
-       P.(verify) (otf h) (otf a) (otf e) (otf z)
+   ; Scheme.verify := λ h a e z, P.(verify)
+       (otf h) (otf a) (otf e) (otf z)
    ; Scheme.simulate := λ h e, {code
        r ← sample uniform #|P.(RandSim)| ;;
-       let '(a, z) := P.(simulate) (otf h) (otf e) (otf r) in
+       let '(a, z) :=
+         P.(simulate) (otf h) (otf e) (otf r) in
        ret (fto a, fto z)
      }
    ; Scheme.extractor := λ h w e e' z z',
-       match P.(extractor) (otf h) (otf w) (otf e) (otf e') (otf z) (otf z') with
+       match P.(extractor) (otf h) (otf w)
+         (otf e) (otf e') (otf z) (otf z') with
        | inl w => Some (fto w)
        | inr f => None
        end
   |}.
 
-Let P' := sigma_as_scheme.
+Section NotInPaper.
+
+Context {H W F C : finType} {R : H → W → Prop}.
+Context {E : F → Prop} (P : sigma C R E).
+Let P' := encode P.
 
 Theorem sigma_Complete A
   `{LtRand : Lt 0 #|Rand P|}
@@ -102,10 +111,12 @@ Proof. (* only relies on group homomorphism *)
   by do 2 f_equal.
 Qed.
 
+End NotInPaper.
+
 Definition GUESS := 40%N.
 
-Definition IRel (A : finType) :=
-  [interface [ GUESS ] : { 'fin #|A| ~> bool } ].
+Definition IRel (A : finType) := [interface
+  [ GUESS ] : { 'fin #|A| ~> bool } ].
 
 Definition Rel {A : finType}
   (R : A → Prop) b : game (IRel A) :=
@@ -127,26 +138,32 @@ Proof.
 Qed.
 
 
-Definition SSRed : package (IRel F) (ISoundness P') :=
+Definition SSRed {H W F C : finType}
+  {R : H → W → Prop} {E : F → Prop}
+  (P : sigma C R E)
+  : package (IRel F) (ISoundness (encode P)) :=
   [package emptym ;
     [ SOUNDNESS ] '(h, a, (e, z), (e', z')) {
-      let v1 := P'.(Scheme.verify) h a e z in
-      let v2 := P'.(Scheme.verify) h a e' z' in
+      let v1 :=
+        (encode P).(Scheme.verify) h a e z in
+      let v2 :=
+        (encode P).(Scheme.verify) h a e' z' in
       let v3 := e != e' in
-      match P.(extractor) (otf h) (otf a) (otf e) (otf e') (otf z) (otf z') with
+      match P.(extractor) (otf h) (otf a)
+        (otf e) (otf e') (otf z) (otf z') with
       | inl w => 
-          ret [==> v1, v2, v3 =>
-            P'.(Scheme.R) h (fto w)
-          ]
+          ret (v1 && v2 && v3 ==>
+            (encode P).(Scheme.R) h (fto w))
       | inr f =>
-          b ← call [ GUESS ] : { 'fin #|F| ~> bool} (fto f) ;;
-          ret [==> v1, v2, v3, b => false]
+          b ← call [ GUESS ] (fto f) ;;
+          ret (v1 && v2 && v3 && b ==> false)
       end
     }
   ].
 
-Lemma SSRed_perfect b :
-  perfect (ISoundness P') (Special_Soundness P' b) (SSRed ∘ Rel E b).
+Lemma SSRed_perfect {H W F C : finType}
+  {R : H → W → Prop} {E : F → Prop} {P : sigma C R E} b :
+  perfect (ISoundness (encode P)) (Special_Soundness (encode P) b) (SSRed P ∘ Rel E b).
 Proof.
   ssprove_share. eapply prove_perfect.
   apply eq_rel_perf_ind_eq.
@@ -157,7 +174,7 @@ Proof.
   destruct (P.(extractor)) => /=.
   - apply r_ret => s0 s1 H'.
     split; [| assumption ].
-
+    rewrite 5!Bool.implb_curry.
     apply implyb_id2l => H1.
     apply implyb_id2l => H2.
     apply implyb_id2l => H3.
@@ -169,6 +186,7 @@ Proof.
     rewrite H4 fto_otf eq_refl // in H3.
   - apply r_ret => s0 s1 H'.
     split; [| assumption ].
+    rewrite 6!Bool.implb_curry.
     apply implyb_id2l => H1.
     apply implyb_id2l => H2.
     apply implyb_id2l => H3.
@@ -182,9 +200,14 @@ Proof.
     rewrite H4 fto_otf eq_refl // in H3.
 Qed.
 
-Theorem sigma_Special_Soundness A
-  `{ValidPackage (loc A) (ISoundness P') A_export A} :
-  AdvOf (Special_Soundness P') A = AdvOf (Rel E) (A ∘ SSRed)%sep.
+Notation Adversary I P := (ValidPackage (loc P) I A_export P %sep).
+
+Theorem sigma_Special_Soundness
+  {H W F C : finType} {R : H → W → Prop}
+  {E : F → Prop} (P : sigma C R E) A
+  `{Adversary (ISoundness (encode P)) A} :
+  AdvOf (Special_Soundness (encode P)) A
+    = AdvOf (Rel E) (A ∘ SSRed P)%sep.
 Proof. by rewrite (AdvOf_perfect SSRed_perfect) Adv_reduction. Qed.
 
 End Properties.
