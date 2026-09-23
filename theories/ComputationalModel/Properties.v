@@ -12,7 +12,7 @@ Section Properties.
 
 Import Sigma.
 
-Program Definition encode {H W F C : finType}
+Definition embed {H W F C : finType}
   {R : H → W → Prop} {E : F → Prop}
   (P : sigma C R E) :=
   {| Scheme.Stmt := 'fin #|H|
@@ -54,7 +54,7 @@ Section NotInPaper.
 
 Context {H W F C : finType} {R : H → W → Prop}.
 Context {E : F → Prop} (P : sigma C R E).
-Let P' := encode P.
+Let P' := embed P.
 
 Theorem sigma_Complete A
   `{LtRand : Lt 0 #|Rand P|}
@@ -141,19 +141,19 @@ Qed.
 Definition SSRed {H W F C : finType}
   {R : H → W → Prop} {E : F → Prop}
   (P : sigma C R E)
-  : package (IRel F) (ISoundness (encode P)) :=
+  : package (IRel F) (ISoundness (embed P)) :=
   [package emptym ;
     [ SOUNDNESS ] '(h, a, (e, z), (e', z')) {
       let v1 :=
-        (encode P).(Scheme.verify) h a e z in
+        (embed P).(Scheme.verify) h a e z in
       let v2 :=
-        (encode P).(Scheme.verify) h a e' z' in
+        (embed P).(Scheme.verify) h a e' z' in
       let v3 := e != e' in
       match P.(extractor) (otf h) (otf a)
         (otf e) (otf e') (otf z) (otf z') with
       | inl w => 
           ret (v1 && v2 && v3 ==>
-            (encode P).(Scheme.R) h (fto w))
+            (embed P).(Scheme.R) h (fto w))
       | inr f =>
           b ← call [ GUESS ] (fto f) ;;
           ret (v1 && v2 && v3 && b ==> false)
@@ -163,7 +163,7 @@ Definition SSRed {H W F C : finType}
 
 Lemma SSRed_perfect {H W F C : finType}
   {R : H → W → Prop} {E : F → Prop} {P : sigma C R E} b :
-  perfect (ISoundness (encode P)) (Special_Soundness (encode P) b) (SSRed P ∘ Rel E b).
+  perfect (ISoundness (embed P)) (Special_Soundness (embed P) b) (SSRed P ∘ Rel E b).
 Proof.
   ssprove_share. eapply prove_perfect.
   apply eq_rel_perf_ind_eq.
@@ -205,8 +205,8 @@ Notation Adversary I P := (ValidPackage (loc P) I A_export P %sep).
 Theorem sigma_Special_Soundness
   {H W F C : finType} {R : H → W → Prop}
   {E : F → Prop} (P : sigma C R E) A
-  `{Adversary (ISoundness (encode P)) A} :
-  AdvOf (Special_Soundness (encode P)) A
+  `{Adversary (ISoundness (embed P)) A} :
+  AdvOf (Special_Soundness (embed P)) A
     = AdvOf (Rel E) (A ∘ SSRed P)%sep.
 Proof. by rewrite (AdvOf_perfect SSRed_perfect) Adv_reduction. Qed.
 
