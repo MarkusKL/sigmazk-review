@@ -7,6 +7,9 @@ From SSProve.Crypt Require Import NominalPrelude.
 Import PackageNotation.
 #[local] Open Scope package_scope.
 
+(* Required by examples *)
+From SigmaZK Require Import Groups Schnorr Square.
+
 
 Section Properties.
 
@@ -87,7 +90,7 @@ Qed.
 Theorem sigma_SHVZK A
   `{ValidPackage (loc A) (ITranscript P') A_export A} :
   AdvOf (SHVZK P') A = 0%R.
-Proof. (* only relies on group homomorphism *)
+Proof.
   eapply prove_perfect; [| eassumption ].
   apply eq_rel_perf_ind_eq.
   simplify_eq_rel hwe.
@@ -209,5 +212,25 @@ Theorem sigma_Special_Soundness
   AdvOf (Special_Soundness (embed P)) A
     = AdvOf (Rel E) (A ∘ SSRed P)%sep.
 Proof. by rewrite (AdvOf_perfect SSRed_perfect) Adv_reduction. Qed.
+
+
+Lemma SS_Schnorr G primeG g A
+  `{Adversary (ISoundness
+    (embed (Schnorr G primeG g))) A} :
+  AdvOf (Special_Soundness
+    (embed (Schnorr G primeG g))) A = 0.
+Proof.
+  etransitivity; [ by apply sigma_Special_Soundness |].
+  apply Rel_NoErr. ssprove_valid.
+Qed.
+
+Lemma SS_R3 G primeG g h hgen A
+  `{Adversary (ISoundness
+    (embed (square_prot G primeG g h hgen))) A} :
+  AdvOf (Special_Soundness
+    (embed (square_prot G primeG g h hgen))) A =
+  AdvOf (Rel (λ e, g ^ e = h))
+    (A ∘ SSRed (square_prot G primeG g h hgen)).
+Proof. by apply sigma_Special_Soundness. Qed.
 
 End Properties.
