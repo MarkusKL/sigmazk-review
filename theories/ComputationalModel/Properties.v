@@ -53,7 +53,7 @@ Definition embed {H W F C : finType}
        end
   |}.
 
-Section NotInPaper.
+Section NotShownInPaper.
 
 Context {H W F C : finType} {R : H → W → Prop}.
 Context {E : F → Prop} (P : sigma C R E).
@@ -114,7 +114,7 @@ Proof.
   by do 2 f_equal.
 Qed.
 
-End NotInPaper.
+End NotShownInPaper.
 
 Definition GUESS := 40%N.
 
@@ -203,8 +203,6 @@ Proof.
     rewrite H4 fto_otf eq_refl // in H3.
 Qed.
 
-Notation Adversary I P := (ValidPackage (loc P) I A_export P %sep).
-
 Theorem sigma_Special_Soundness
   {H W F C : finType} {R : H → W → Prop}
   {E : F → Prop} (P : sigma C R E) A
@@ -214,23 +212,20 @@ Theorem sigma_Special_Soundness
 Proof. by rewrite (AdvOf_perfect SSRed_perfect) Adv_reduction. Qed.
 
 
-Lemma SS_Schnorr G primeG g A
+Corollary SS_Schnorr G primeG g A
   `{Adversary (ISoundness
     (embed (Schnorr G primeG g))) A} :
   AdvOf (Special_Soundness
     (embed (Schnorr G primeG g))) A = 0.
-Proof.
-  etransitivity; [ by apply sigma_Special_Soundness |].
-  apply Rel_NoErr. ssprove_valid.
-Qed.
+Proof. by rewrite sigma_Special_Soundness Rel_NoErr. Qed.
 
-Lemma SS_R3 G primeG g h hgen A
+Corollary SS_R3 G primeG g h hgen A
   `{Adversary (ISoundness
-    (embed (square_prot G primeG g h hgen))) A} :
+    (embed (R3_Protocol G primeG g h hgen))) A} :
   AdvOf (Special_Soundness
-    (embed (square_prot G primeG g h hgen))) A =
+    (embed (R3_Protocol G primeG g h hgen))) A =
   AdvOf (Rel (λ e, g ^ e = h))
-    (A ∘ SSRed (square_prot G primeG g h hgen)).
+    (A ∘ SSRed (R3_Protocol G primeG g h hgen)).
 Proof. by apply sigma_Special_Soundness. Qed.
 
 End Properties.

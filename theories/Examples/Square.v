@@ -14,7 +14,7 @@ Let R3' : G * G → 'Z_#|G| ^ 4 → Prop
 
 Let Err := λ e : 'Z_#|G|, g ^ e = h.
 
-Program Definition square_prot : sigma 'Z_#|G| R3 Err :=
+Program Definition R3_Protocol : sigma 'Z_#|G| R3 Err :=
   Pedersen_expg h (λ x, g ^ x) _ _
     (WitnessMap (Wit' := 'Z_#|G| ^ 4)
       (λ '(x, r), (x, - (r * x), r, x * x)%R)

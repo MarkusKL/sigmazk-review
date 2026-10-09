@@ -1,6 +1,5 @@
 let
-  args = { bundle = "9.1"; inNixShell = true; };
-  nixpkgs = import ./default.nix args;
+  nixpkgs = import ./pin.nix {};
   pkgs = nixpkgs.pkgs;
   vimCustom = pkgs.callPackage ({ vim-full, vimPlugins }:
     (vim-full.customize {
@@ -33,7 +32,6 @@ let
 in pkgs.mkShell {
   packages = with pkgs; [
     coqPackages.coq
-    # coqPackages.coqide
     coqPackages.ssprove
     vimCustom
     gnumake

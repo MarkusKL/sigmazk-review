@@ -36,7 +36,7 @@ Check @Okamoto.
 Check @ChaumPedersen.
 Check @R1_Protocol.
 Check @R2_Protocol.
-Check @square_prot.
+Check @R3_Protocol.
 Check @sigmaR.
 Check @inverse_prot.
 Check @poly_sigma_pure.
@@ -57,7 +57,7 @@ Check Fourthly_our_rules_and_examples_use_no_axioms.
 Definition rules_and_examples := (
   @OR , @AND , @DepHom, @WitnessMap, @Pedersen, @Shrink, @Parallel,
   @Schnorr, @Okamoto, @ChaumPedersen, @R1_Protocol, @R2_Protocol,
-  @square_prot, @sigmaR, @inverse_prot, @poly_sigma_pure,
+  @R3_Protocol, @sigmaR, @inverse_prot, @poly_sigma_pure,
   @BBSPlusPoK, @BBS2, @Adjust, @GuillouQuisquater, @BitCommitment, @EQ,
   @ECAdd_Circuit, @ECAdd_ZK ).
 

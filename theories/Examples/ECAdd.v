@@ -188,7 +188,7 @@ Obligation 2.
     a b t x r1 r2 r3 r4 r5 r6 r8 r10 r10' r11 r13 r14 r15 r16 r17.
   move=> [] H1 [] H2 [] H3 [] H4 [] H5 [] H6 [] H8.
   move=> [] H10 [] H11 [] H13 [] H14 [] H15 [] H16 [] H17 H18. subst.
-  destruct (b.1 - a.1 == 0)%B eqn:E; rewrite E. {
+  destruct (b.1 - a.1 == 0)%B eqn:E. {
     move=> /eqP in E. rewrite E in H8.
     rewrite expgr0 Ch in H8. by symmetry. }
   assert (E' := E). move=> /eqP in E'.
@@ -196,7 +196,7 @@ Obligation 2.
   apply expgr_eq_l in H11; [| by apply Z_is_unit_prime ].
   subst. rewrite !Csimpl in H16, H17.
   destruct (t.1 - (((b.2 - a.2) / (b.1 - a.1)) ^ 2 - a.1 - b.1) != 0)%B
-    eqn:Ex; rewrite Ex. {
+    eqn:Ex. {
       simpl.
     apply (Ceq H16).
     assert (1 / (b.1 - a.1) * (b.2 - a.2) * (b.2 - a.2) / (b.1 - a.1)
@@ -206,7 +206,7 @@ Obligation 2.
     rewrite H. by apply /eqP.
   }
   destruct (t.2 - (((b.2 - a.2) / (b.1 - a.1)) * (b.1 - t.1) - a.2) != 0)%B
-    eqn:Ey; rewrite Ey. { 
+    eqn:Ey. { 
     apply (Ceq H17).
     rewrite GRing.mul1r (GRing.mulrC _ (b.2 - a.2)).
     by apply /eqP.
@@ -233,18 +233,18 @@ Obligation 3.
   + move=> [] H1 [] H2 [] H3 [] H4 [] H5 [] H6 [] H8.
     move=> [] H10 [] H11 [] H13 [] H14 [] H15 [] H16 [] H17 H18. subst.
     repeat (apply pair_equal_spec; split => //).
-    * by rewrite H8 invMg mulgC mulKVg. 
-    * rewrite H11. symmetry. by rewrite invMg mulgC mulKVg.
-    * by rewrite /Com mulgC expgr1 mulKg.
-    * by rewrite H16 -4!mulgA mulKg 2!mulKVg.
-    * by rewrite -mulgA H17 -mulgA mulKg mulKVg.
+    * by rewrite H8 (invMg (Com 1 r14)) mulgC mulKVg. 
+    * rewrite H11. symmetry. by rewrite invMg (mulgC (y := h ^ r11)) mulKVg.
+    * by rewrite /Com (mulgC (y := g^-1)) expgr1 mulKg.
+    * by rewrite H16 /Com 2!invMg -8!mulgA mulKg 4!mulKVg.
+    * by rewrite H17 2!invMg -6!mulgA 2!mulKg 2!mulKVg.
   + move=> H. repeat apply pair_equal_spec in H as [H ?]. subst.
     repeat split; try done.
     * rewrite mulgC in H8.
       by apply mulg_eq_inv_r, mulg_eq_inv_l in H8.
     * apply esym in H6.
       apply mulg_eq_inv_l, mulg_eq_inv_r in H6.
-      apply esym. by rewrite mulgC.
+      apply esym. by rewrite (mulgC (y := h ^ r11)).
     * apply esym, mulg_eq_inv_r in H4.
       rewrite mulgC in H4. by apply esym.
     * by rewrite -H2 -4!mulgA 2!mulKg mulKVg.

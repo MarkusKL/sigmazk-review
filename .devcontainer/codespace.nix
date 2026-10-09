@@ -1,9 +1,5 @@
 let
-  args = { bundle = "9.1"; inNixShell = true; };
-  nixpkgs = import ../default.nix args;
-  pkgs = nixpkgs.pkgs;
-  # push cache:
-  # nix-build codespace.nix | cachix push markuskl-ssprove
+  pkgs = (import ../pin.nix {}).pkgs;
 in pkgs.mkShell {
   packages = with pkgs; [
     coqPackages.coq

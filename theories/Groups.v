@@ -67,7 +67,7 @@ Lemma expgrN (x : G) (a : 'Z_#|G|) : x ^ (- a) = x^-1 ^ a.
 Proof. by rewrite -expgrN1 -expgrM GRing.mulN1r. Qed.
 
 Lemma expgrnV (x : G) (n : nat) : x ^- n = x ^ (- n%:R).
-Proof. rewrite /expgr -expgVn expgrn -expgrN //. Qed.
+Proof. rewrite -expgVn expgrn -expgrN //. Qed.
 
 
 (* Exponent in int *)
@@ -335,7 +335,7 @@ Section HomInstances.
   Proof.
     move=> /= HC HF1 HF2 x y.
     rewrite 2!Hom_mulg 2!mulgA.
-    f_equal. by rewrite -mulgA HC mulgA.
+    f_equal. by rewrite -2!mulgA HC.
   Qed.
 
   #[export] Instance invg_Hom (F1 : G → H)

@@ -1,5 +1,6 @@
 From Coq Require Export Utf8.
 
+
 #[export] Set Warnings "-notation-overridden,-ambiguous-paths,-notation-incompatible-prefix".
 From mathcomp Require Export all_ssreflect all_algebra.
 
@@ -13,7 +14,6 @@ From mathcomp Require Export all_ssreflect all_algebra.
 #[export] Obligation Tactic := move=> //=.
 
 #[global] Bind Scope type_scope with finType.
-
 
 (* Basic definitions *)
 

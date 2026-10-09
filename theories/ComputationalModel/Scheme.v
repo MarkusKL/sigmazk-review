@@ -5,7 +5,6 @@ From mathcomp Require Import reals distr realsum.
 From SSProve.Crypt Require Import NominalPrelude.
 Import PackageNotation. #[local] Open Scope package_scope.
 
-Notation dist A := (code emptym [interface] A).
 
 Section Scheme.
 
