@@ -1,8 +1,8 @@
-From Coq Require Export Utf8.
+From Stdlib Require Export Utf8.
 
 
 #[export] Set Warnings "-notation-overridden,-ambiguous-paths,-notation-incompatible-prefix".
-From mathcomp Require Export all_ssreflect all_algebra.
+From mathcomp Require Export all_boot all_order all_algebra.
 
 (* Enforce sensible proof structure. *)
 #[export] Set Bullet Behavior "Strict Subproofs".

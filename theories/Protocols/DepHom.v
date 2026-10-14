@@ -12,10 +12,10 @@ Context {Forb : finType} {Err : Forb → Prop}
   (Thm3b : ∀ i, F i (u i) = P i ^+ l).
 
 Notation "x ⊗  y" :=
-  (@mulg H x y) (at level 40).
+  (@mul H x y) (at level 40).
 
 Notation "x ⊕ y" :=
-  (@mulg G x y) (at level 40).
+  (@mul G x y) (at level 40).
 
 Notation "x ^ z" :=
   (expgz x z) : group_scope.
@@ -50,7 +50,7 @@ Obligation 2.
 Qed.
 Obligation 3.
   move=> w e.
-  exists (mulg^~ (w ^- e)); split;
+  exists (mul^~ (w ^- e)); split;
     intros ?; by rewrite ?mulgK ?mulgKV.
 Qed.
 Obligation 4.

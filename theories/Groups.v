@@ -1,6 +1,7 @@
 From SigmaZK Require Import Base.
 From mathcomp Require Export all_fingroup solvable.cyclic.
-#[global] Open Scope ring_scope. Export GroupScope.
+#[global] Open Scope ring_scope.
+#[global] Open Scope group_scope.
 
 
 #[global] Bind Scope type_scope with finGroupType.
@@ -31,7 +32,7 @@ Proof. rewrite expg_mod // expg_trunc //. Qed.
 (* Exponent in ring module order of G *)
 
 Definition expgr : G → 'Z_#|G| → G
-  := λ x r, expgn x r.
+  := λ x r, natexp x r.
 
 Arguments expgr _%_g _%_R.
 
@@ -242,16 +243,16 @@ Proof. move=> /cyclicP [z H].  apply (@commute_gen z).  by apply /eqP. Qed.
 Lemma prime_commute {x y : G} : prime #|G| → commute x y.
 Proof. intros. apply cyclic_commute, prime_cyclic. by rewrite cardsT. Qed.
 
-Lemma inv_mulg {x : G} : inverse (mulg x).
+Lemma inv_mulg {x : G} : inverse (mul x).
 Proof.
-  exists (mulg x^-1); split.
+  exists (mul x^-1); split.
   - intros y. by rewrite mulKg.
   - intros y. by rewrite mulKVg.
 Qed.
 
-Lemma inv_mulg_r {x : G} : inverse (mulg^~ x).
+Lemma inv_mulg_r {x : G} : inverse (mul^~ x).
 Proof.
-  exists (mulg^~ x^-1); split.
+  exists (mul^~ x^-1); split.
   - intros y. by rewrite mulgK.
   - intros y. by rewrite mulgKV.
 Qed.
@@ -392,7 +393,7 @@ Existing Class commute.
 #[export] Instance commuteZ (m : nat) : ∀ x y : 'Z_m, commute x y.
 Proof.
   intros x y. unfold commute.
-  change mulg with (@GRing.add 'Z_m). by rewrite GRing.addrC.
+  change mul with (@GRing.add 'Z_m). by rewrite GRing.addrC.
 Qed.
 
 Notation " 'Z*_ m " := {unit 'Z_m}
